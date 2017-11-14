@@ -11,3 +11,24 @@
 interface: "eth0"
 python_crypto_package_name: python-pycrypto
 docker_package_name: docker
+
+pip_build_required_packages:
+  - gcc
+  - libffi-devel
+  - libxslt-devel
+  - openssl-devel
+  - libxml2-devel
+  - python-devel
+
+virt_required_packages:
+  - qemu-tools
+  - qemu-kvm
+  - qemu-x86
+  - qemu-sgabios
+  - libvirt
+  - libvirt-client
+  - libvirt-daemon
+  - libvirt-python
+  - python-lxml
+  - pkg-config
+  - libvirt-devel

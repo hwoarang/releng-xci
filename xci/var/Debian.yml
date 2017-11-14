@@ -11,3 +11,22 @@
 interface: "ens3"
 python_crypto_package_name: python-crypto
 docker_package_name: docker.io
+
+pip_build_required_packages:
+  - gcc
+  - libffi-dev
+  - libxslt1-dev
+  - libssl-dev
+  - libxml2-dev
+  - python-deva
+
+virt_required_packages:
+  - libvirt-bin
+  - qemu-utils
+  - qemu-kvm
+  - qemu-system-x86
+  - sgabios
+  - python-libvirt
+  - python-lxml
+  - pkg-config
+  - libvirt-dev

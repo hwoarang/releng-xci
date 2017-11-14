@@ -7,16 +7,15 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 ---
-- hosts: localhost
-  connection: local
+- hosts: opnfv
   name: "Setting pre-test conditions"
   become: yes
   ignore_errors: yes
   tasks:
   - name: Remove pre-existing leases file
     file: path=/var/lib/misc/dnsmasq.leases state=absent
-- hosts: localhost
-  connection: local
+
+- hosts: opnfv
   name: "Executes install, enrollment, and testing in one playbook"
   become: no
   gather_facts: yes
@@ -29,7 +28,8 @@
   environment:
     http_proxy: "{{ lookup('env','http_proxy') }}"
     https_proxy: "{{ lookup('env','https_proxy') }}"
-- hosts: localhost
+
+- hosts: opnfv
   connection: local
   name: "Executes install, enrollment, and testing in one playbook"
   become: yes

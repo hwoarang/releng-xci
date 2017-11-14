@@ -1,21 +1,64 @@
 ---
-host_info: {
-    'opnfv': {
-        'VLAN_IP': '192.168.122.2',
-        'MGMT_IP': '172.29.236.10',
-        'VXLAN_IP': '172.29.240.10',
-        'STORAGE_IP': '172.29.244.10'
-    },
-    'controller00': {
-        'VLAN_IP': '192.168.122.3',
-        'MGMT_IP': '172.29.236.11',
-        'VXLAN_IP': '172.29.240.11',
-        'STORAGE_IP': '172.29.244.11'
-    },
-    'compute00': {
-        'VLAN_IP': '192.168.122.4',
-        'MGMT_IP': '172.29.236.12',
-        'VXLAN_IP': '172.29.240.12',
-        'STORAGE_IP': '172.29.244.12'
-    },
-}
+nodes:
+  - name: opnfv
+    node:
+      type: virtual
+      vendor: libvirt
+      model: pc
+      memory: 8192
+      arch: x86_64
+      cores: 2
+      disk_cache: "unsafe"
+      disk_size: 30
+      storage: "/var/lib/libvirt/images/"
+      os: "opensuse"
+      networks: &opnfv_networks
+        - network: default
+          hostname: opnfv.xci.local
+          mac: '52:54:00:39:ff:00'
+          ip: '192.168.122.2'
+  - name: controller00
+    node:
+      type: virtual
+      vendor: libvirt
+      model: pc
+      memory: 12288
+      arch: x86_64
+      cores: 6
+      disk_cache: "unsafe"
+      disk_size: 80
+      storage: "/var/lib/libvirt/images/"
+      networks: &controller00_networks
+        - network: default
+          hostname: controller00.xci.local
+          mac: '52:54:00:39:ff:01'
+          ip: '192.168.122.3'
+  - name: compute00
+    node:
+      type: virtual
+      vendor: libvirt
+      model: pc
+      memory: 12288
+      arch: x86_64
+      cores: 6
+      disk_cache: "unsafe"
+      disk_size: 80
+      storage: "/var/lib/libvirt/images/"
+      networks: &compute00_networks
+        - network: default
+          hostname: compute00.xci.local
+          mac: '52:54:00:39:ff:02'
+          ip: '192.168.122.4'
+networks:
+  - name: default
+    ip: '192.168.122.1'
+    netmask: '255.255.255.0'
+    bridge_name: 'virtbr0'
+    forward_mode: 'nat'
+    enable_dhcp: true
+    dhcp_start: '192.168.122.2'
+    dhcp_end: '192.168.122.254'
+    static:
+      - <<: *opnfv_networks
+      - <<: *controller00_networks
+      - <<: *compute00_networks

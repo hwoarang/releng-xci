@@ -59,6 +59,18 @@ source $XCI_PATH/config/pinned-versions
 source "$XCI_PATH/config/${XCI_FLAVOR}-vars"
 # source xci configuration
 source $XCI_PATH/config/env-vars
+# build and use use our own configuration file
+cat > $XCI_PATH/.cache/xci-ssh-config <<EOF
+Host *
+IdentityFile $XCI_PATH/scripts/vm/id_rsa_for_dib
+StrictHostKeyChecking no
+User devuser
+EOF
+cat > $XCI_PATH/.cache/ansible.cfg <<EOF
+[ssh_connection]
+ssh_args = '-F $XCI_PATH/.cache/xci-ssh-config'
+EOF
+export ANSIBLE_CONFIG=$XCI_PATH/.cache/ansible.cfg
 
 if [[ -z $(echo $PATH | grep "$HOME/.local/bin")  ]]; then
     export PATH="$HOME/.local/bin:$PATH"
@@ -161,12 +173,13 @@ echo "Info: Starting provisining VM nodes using openstack/bifrost"
 echo "-------------------------------------------------------------------------"
 # We are using sudo so we need to make sure that env_reset is not present
 sudo sed -i "s/^Defaults.*env_reset/#&/" /etc/sudoers
-cd $XCI_PATH/../bifrost/
-sudo -E bash ./scripts/destroy-env.sh
 cd $XCI_PATH/playbooks
-ansible-playbook ${XCI_ANSIBLE_VERBOSITY} -i inventory provision-vm-nodes.yml
-cd ${OPENSTACK_BIFROST_PATH}
-bash ./scripts/bifrost-provision.sh
+ansible-playbook ${XCI_ANSIBLE_VERBOSITY} -i inventory prepare-dev-environment.yml
+ansible-playbook ${XCI_ANSIBLE_VERBOSITY} -i inventory xci-prepare-environment.yml
+ansible-playbook ${XCI_ANSIBLE_VERBOSITY} -i inventory -e network_interface=eth0 $OPENSTACK_BIFROST_PATH/playbooks/install.yaml
+#cd ${OPENSTACK_BIFROST_PATH}
+#bash ./scripts/bifrost-enroll.sh
+exit 0
 echo "-----------------------------------------------------------------------"
 echo "Info: VM nodes are provisioned!"
 source $OPENSTACK_BIFROST_PATH/env-vars
